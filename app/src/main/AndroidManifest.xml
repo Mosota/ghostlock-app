@@ -39,6 +39,16 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".AutoRunToggle"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.ghostlock.app.AUTORUN_ON" />
+                <action android:name="com.ghostlock.app.AUTORUN_OFF" />
+                <action android:name="com.ghostlock.app.AUTORUN" />
+            </intent-filter>
+        </receiver>
         <service
             android:name=".shizuku.GhostlockUserService"
             android:exported="false"

@@ -867,8 +867,6 @@ class GhostlockViewModel(
 
     fun onRun() = runExploit()
 
-    }
-
     /** Explains why the run button is greyed out. */
     fun onProfileInvalid() {
         val state = state.value

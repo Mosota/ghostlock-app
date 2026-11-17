@@ -35,7 +35,7 @@ class AutoRunService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun runOnce() {
+    private suspend fun runOnce() {
         val logFile = File(getExternalFilesDir(null) ?: filesDir, "autorun.log")
         fun log(msg: String) {
             Log.i(TAG, msg)

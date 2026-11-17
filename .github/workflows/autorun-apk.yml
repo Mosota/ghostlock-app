@@ -24,9 +24,9 @@ jobs:
         run: ./gradlew assembleDebug --stacktrace -x buildGhostlockNative -x buildGhostlockExtract
       - name: List APK outputs
         if: always()
-        run: ls -R app/build/outputs 2>/dev/null | head -60
+        run: ls -R build 2>/dev/null | head -60
       - uses: actions/upload-artifact@v4
         with:
           name: ghostlock-autorun-apk
-          path: app/build/outputs/**/*.apk
-          if-no-files-found: warn
+          path: build/**/*.apk
+          if-no-files-found: error

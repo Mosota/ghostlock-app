@@ -20,7 +20,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.ghostlock.app.AutoRunSwitch
 import com.ghostlock.app.GhostlockApplication
 import com.ghostlock.app.R
 
@@ -69,7 +68,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.initialize()
-        if (AutoRunSwitch.consumePending(this)) viewModel.autoRunWhenReady()
         setContent {
             GhostlockRoute(viewModel, ::handleEffect)
         }

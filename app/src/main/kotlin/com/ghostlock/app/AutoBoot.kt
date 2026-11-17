@@ -1,30 +1,36 @@
 package com.ghostlock.app
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ghostlock.app.ui.MainActivity
+import android.os.SystemClock
 
 /**
- * Boot trigger: opens MainActivity with the autorun extra so the app runs the
- * same exploit path as the Run button, without a tap.
+ * 开机触发：只做一件事——把无界面的 AutoRunService 拉起来。
+ * 起不来就用 AlarmManager 15 秒后重试一次，不碰界面、不需要悬浮窗权限。
  */
 class AutoBoot : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
-        if (action != Intent.ACTION_BOOT_COMPLETED && action != Intent.ACTION_LOCKED_BOOT_COMPLETED) return
+        if (action != Intent.ACTION_BOOT_COMPLETED && action != "android.intent.action.QUICKBOOT_POWERON") return
         if (!AutoRunSwitch.isEnabled(context)) return
-        /* 先走无界面服务；起不来再回退到带待办标记的界面路径。 */
+
+        val svc = Intent(context, AutoRunService::class.java)
         val started = runCatching {
-            context.startForegroundService(Intent(context, AutoRunService::class.java))
+            context.startForegroundService(svc)
             true
         }.getOrDefault(false)
         if (started) return
-        AutoRunSwitch.markPending(context)
-        val launch = Intent(context, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            putExtra("autorun", true)
+
+        val pi = PendingIntent.getForegroundService(
+            context, 1001, svc,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        runCatching {
+            context.getSystemService(AlarmManager::class.java)
+                .set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 15_000, pi)
         }
-        runCatching { context.startActivity(launch) }
     }
 }

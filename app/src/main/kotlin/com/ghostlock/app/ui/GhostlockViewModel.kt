@@ -867,22 +867,6 @@ class GhostlockViewModel(
 
     fun onRun() = runExploit()
 
-    /**
-     * Boot-triggered entry: waits for the kernel snapshot and execution profile,
-     * then runs the same path the Run button uses.
-     */
-    fun autoRunWhenReady() {
-        viewModelScope.launch {
-            repeat(240) {
-                if (state.value.executionHasProfile && !running && kernelSnapshot != null) {
-                    appendLog("autorun: boot trigger")
-                    onRun()
-                    return@launch
-                }
-                delay(500)
-            }
-            appendLog("autorun: gave up waiting for profile")
-        }
     }
 
     /** Explains why the run button is greyed out. */

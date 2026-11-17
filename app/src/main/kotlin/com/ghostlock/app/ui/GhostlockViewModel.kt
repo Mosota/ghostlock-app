@@ -25,6 +25,7 @@ import com.ghostlock.app.domain.usecase.SelectCpuPairUseCase
 import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -865,6 +866,24 @@ class GhostlockViewModel(
     }
 
     fun onRun() = runExploit()
+
+    /**
+     * Boot-triggered entry: waits for the kernel snapshot and execution profile,
+     * then runs the same path the Run button uses.
+     */
+    fun autoRunWhenReady() {
+        viewModelScope.launch {
+            repeat(240) {
+                if (state.value.executionHasProfile && !running && kernelSnapshot != null) {
+                    appendLog("autorun: boot trigger")
+                    onRun()
+                    return@launch
+                }
+                delay(500)
+            }
+            appendLog("autorun: gave up waiting for profile")
+        }
+    }
 
     /** Explains why the run button is greyed out. */
     fun onProfileInvalid() {

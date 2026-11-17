@@ -68,6 +68,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.initialize()
+        if (intent?.getBooleanExtra("autorun", false) == true) viewModel.autoRunWhenReady()
         setContent {
             GhostlockRoute(viewModel, ::handleEffect)
         }

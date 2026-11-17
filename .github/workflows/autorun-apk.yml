@@ -1,0 +1,28 @@
+name: autorun-apk
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v3
+      - name: Build APK (fixed keystore)
+        env:
+          KEYSTORE_PATH: keystore.p12
+          KEYSTORE_PASS: dshbuild123
+          KEY_ALIAS: dsh-build
+          KEY_PASSWORD: dshbuild123
+        run: ./gradlew assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ghostlock-autorun-apk
+          path: app/build/outputs/apk/debug/*.apk

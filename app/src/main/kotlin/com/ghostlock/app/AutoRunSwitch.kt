@@ -15,6 +15,24 @@ object AutoRunSwitch {
     fun setEnabled(ctx: Context, on: Boolean) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY, on).apply()
     }
+
+    private const val PENDING = "pendingUntil"
+    private const val WINDOW_MS = 120_000L
+
+    /** 开机时打一个 2 分钟内有效的待办标记，由界面消费一次。 */
+    fun markPending(ctx: Context) {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putLong(PENDING, System.currentTimeMillis() + WINDOW_MS).apply()
+    }
+
+    /** 消费待办：只有开机窗口内、且只消费一次，才返回 true。 */
+    fun consumePending(ctx: Context): Boolean {
+        val prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val until = prefs.getLong(PENDING, 0L)
+        val ok = until > System.currentTimeMillis()
+        if (until != 0L) prefs.edit().remove(PENDING).apply()
+        return ok
+    }
 }
 
 /**

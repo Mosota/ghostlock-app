@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ghostlock.app.AutoRunSwitch
 import com.ghostlock.app.R
 import com.ghostlock.app.data.ManagerScanner
 import com.ghostlock.app.domain.model.CpuPair
@@ -878,6 +879,17 @@ private fun ControlPanel(
                 onCheckedChange = actions::onSafeModeChanged,
                 title = stringResource(R.string.safe_mode_label),
                 summary = stringResource(R.string.safe_mode_summary),
+            )
+            val autoRunContext = LocalContext.current
+            var autoRunOn by remember { mutableStateOf(AutoRunSwitch.isEnabled(autoRunContext)) }
+            SwitchPreference(
+                checked = autoRunOn,
+                onCheckedChange = { enabled ->
+                    autoRunOn = enabled
+                    AutoRunSwitch.setEnabled(autoRunContext, enabled)
+                },
+                title = stringResource(R.string.autorun_label),
+                summary = stringResource(R.string.autorun_summary),
             )
             /* PROFILE-SUGGEST-01: the profile suggestion seeds the toggle but no
              * longer hides it; an explicit user choice overrides either way. */

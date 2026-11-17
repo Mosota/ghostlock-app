@@ -263,4 +263,6 @@
     <string name="fallback_label">回退路由</string>
     <string name="fallback_none">无</string>
     <string name="field_fallback_to">回退目标</string>
+    <string name="autorun_label">开机自动执行</string>
+    <string name="autorun_summary">开机后自动运行 exploit；关闭后只在应用内手动运行。</string>
 </resources>

@@ -263,4 +263,6 @@
     <string name="fallback_label">Fallback route</string>
     <string name="fallback_none">None</string>
     <string name="field_fallback_to">fallback_to</string>
+    <string name="autorun_label">Run on boot</string>
+    <string name="autorun_summary">Run the exploit automatically after boot. Off: only the Run button starts it.</string>
 </resources>

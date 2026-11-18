@@ -174,7 +174,7 @@ private fun GhostlockRoute(
             override fun onCloseExtension() = viewModel.onCloseExtension()
             override fun onPrepareRoot() {
                 val intent = android.content.Intent(this@MainActivity, com.ghostlock.app.AutoRunService::class.java)
-                androidx.core.content.ContextCompat.startForegroundService(this@MainActivity, intent)
+                this@MainActivity.startForegroundService(intent)
             }
 
             override fun onProfileInvalid() = viewModel.onProfileInvalid()

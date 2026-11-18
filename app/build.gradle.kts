@@ -87,7 +87,8 @@ android {
     val keystorePwd = properties.getProperty("KEYSTORE_PASS") ?: System.getenv("KEYSTORE_PASS")
     val alias = properties.getProperty("KEY_ALIAS") ?: System.getenv("KEY_ALIAS")
     val pwd = properties.getProperty("KEY_PASSWORD") ?: System.getenv("KEY_PASSWORD")
-    val keystoreFile = keystorePath?.let(::file)?.takeIf { it.isFile && it.length() > 0L }
+    /* 注意：模块内的 file() 会解析到 app/ 目录，keystore 在仓库根，必须用 rootProject.file */
+    val keystoreFile = keystorePath?.let { rootProject.file(it) }?.takeIf { it.isFile && it.length() > 0L }
     if (keystoreFile != null) {
         signingConfigs {
             create("release") {

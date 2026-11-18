@@ -60,18 +60,36 @@ class AutoRunService : Service() {
             val code = RunExploitUseCase(repo)(pair, useShizuku) { log(it) }
             log("exit=$code")
 
+            /* 关键诊断：exploit 之后本进程到底是不是 root */
+            val selfUid = android.os.Process.myUid()
+            log("self uid after exploit = $selfUid")
+
+            fun runRoot(cmd: String): String = runCatching {
+                val pb = if (selfUid == 0) ProcessBuilder("sh", "-c", cmd)
+                         else ProcessBuilder("su", "-c", cmd)
+                val proc = pb.redirectErrorStream(true).start()
+                val out = proc.inputStream.bufferedReader().readText().trim()
+                proc.waitFor()
+                out
+            }.getOrElse { "error: ${it.message}" }
+
             /* 提权成功后，按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
             if (PermMonSwitch.isEnabled(this@AutoRunService)) {
-                val result = runCatching {
-                    val proc = ProcessBuilder(
-                        "su", "-c",
-                        "setprop persist.sys.permission.enable false; getprop persist.sys.permission.enable",
-                    ).redirectErrorStream(true).start()
-                    val out = proc.inputStream.bufferedReader().readText().trim()
-                    proc.waitFor()
-                    out
-                }.getOrElse { "error: ${it.message}" }
-                log("permission-monitor -> $result")
+                log("permission-monitor -> " + runRoot(
+                    "setprop persist.sys.permission.enable false; getprop persist.sys.permission.enable"
+                ))
+            }
+
+            /* 开机脚本：/sdcard/Download/DSH-Go/boot.sh，逐行以 root 执行 */
+            val bootScript = java.io.File("/sdcard/Download/DSH-Go/boot.sh")
+            if (bootScript.exists()) {
+                bootScript.readLines()
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() && !it.startsWith("#") }
+                    .forEach { line ->
+                        log("boot.sh: $line")
+                        log("  -> " + runRoot(line))
+                    }
             }
         } catch (t: Throwable) {
             log("error: ${t::class.java.simpleName}: ${t.message}")

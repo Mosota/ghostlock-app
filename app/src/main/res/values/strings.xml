@@ -265,4 +265,6 @@
     <string name="field_fallback_to">fallback_to</string>
     <string name="autorun_label">Run on boot</string>
     <string name="autorun_summary">Run the exploit automatically after boot. Off: only the Run button starts it.</string>
+    <string name="permmon_label">Disable permission monitor on boot</string>
+    <string name="permmon_summary">After boot-time root, turn off ColorOS ADB permission monitoring. Keeps full ADB without regressing the UI.</string>
 </resources>

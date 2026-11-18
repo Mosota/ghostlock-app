@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghostlock.app.AutoRunSwitch
+import com.ghostlock.app.PermMonSwitch
 import com.ghostlock.app.R
 import com.ghostlock.app.data.ManagerScanner
 import com.ghostlock.app.domain.model.CpuPair
@@ -890,6 +891,17 @@ private fun ControlPanel(
                 },
                 title = stringResource(R.string.autorun_label),
                 summary = stringResource(R.string.autorun_summary),
+            )
+            val permMonContext = LocalContext.current
+            var permMonOn by remember { mutableStateOf(PermMonSwitch.isEnabled(permMonContext)) }
+            SwitchPreference(
+                checked = permMonOn,
+                onCheckedChange = { enabled ->
+                    permMonOn = enabled
+                    PermMonSwitch.setEnabled(permMonContext, enabled)
+                },
+                title = stringResource(R.string.permmon_label),
+                summary = stringResource(R.string.permmon_summary),
             )
             /* PROFILE-SUGGEST-01: the profile suggestion seeds the toggle but no
              * longer hides it; an explicit user choice overrides either way. */

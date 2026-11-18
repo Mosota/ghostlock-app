@@ -59,6 +59,20 @@ class AutoRunService : Service() {
             log("start exploit pair=$pair shizuku=$useShizuku")
             val code = RunExploitUseCase(repo)(pair, useShizuku) { log(it) }
             log("exit=$code")
+
+            /* 提权成功后，按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
+            if (PermMonSwitch.isEnabled(this@AutoRunService)) {
+                val result = runCatching {
+                    val proc = ProcessBuilder(
+                        "su", "-c",
+                        "setprop persist.sys.permission.enable false; getprop persist.sys.permission.enable",
+                    ).redirectErrorStream(true).start()
+                    val out = proc.inputStream.bufferedReader().readText().trim()
+                    proc.waitFor()
+                    out
+                }.getOrElse { "error: ${it.message}" }
+                log("permission-monitor -> $result")
+            }
         } catch (t: Throwable) {
             log("error: ${t::class.java.simpleName}: ${t.message}")
         } finally {

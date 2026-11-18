@@ -830,6 +830,7 @@ private fun ControlPanel(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
+        var extensionVisible by remember { mutableStateOf(false) }
         ActivationStatusCard(
             supported = state.kernelSupported,
             profileAvailable = state.executionHasProfile,
@@ -881,27 +882,10 @@ private fun ControlPanel(
                 title = stringResource(R.string.safe_mode_label),
                 summary = stringResource(R.string.safe_mode_summary),
             )
-            val autoRunContext = LocalContext.current
-            var autoRunOn by remember { mutableStateOf(AutoRunSwitch.isEnabled(autoRunContext)) }
-            SwitchPreference(
-                checked = autoRunOn,
-                onCheckedChange = { enabled ->
-                    autoRunOn = enabled
-                    AutoRunSwitch.setEnabled(autoRunContext, enabled)
-                },
-                title = stringResource(R.string.autorun_label),
-                summary = stringResource(R.string.autorun_summary),
-            )
-            val permMonContext = LocalContext.current
-            var permMonOn by remember { mutableStateOf(PermMonSwitch.isEnabled(permMonContext)) }
-            SwitchPreference(
-                checked = permMonOn,
-                onCheckedChange = { enabled ->
-                    permMonOn = enabled
-                    PermMonSwitch.setEnabled(permMonContext, enabled)
-                },
-                title = stringResource(R.string.permmon_label),
-                summary = stringResource(R.string.permmon_summary),
+            ArrowPreference(
+                title = stringResource(R.string.extensions_label),
+                summary = stringResource(R.string.extensions_summary),
+                onClick = { extensionVisible = true },
             )
             /* PROFILE-SUGGEST-01: the profile suggestion seeds the toggle but no
              * longer hides it; an explicit user choice overrides either way. */
@@ -929,6 +913,38 @@ private fun ControlPanel(
                 title = stringResource(R.string.advanced_settings),
                 summary = stringResource(R.string.advanced_settings_summary),
                 onClick = actions::onOpenAdvanced,
+            )
+        }
+        if (extensionVisible) {
+            OverlayDialog(
+                show = true,
+                title = stringResource(R.string.extensions_label),
+                onDismissRequest = { extensionVisible = false },
+                content = {
+                    Column {
+                        val extContext = LocalContext.current
+                        var autoRunOn by remember { mutableStateOf(AutoRunSwitch.isEnabled(extContext)) }
+                        SwitchPreference(
+                            checked = autoRunOn,
+                            onCheckedChange = { enabled ->
+                                autoRunOn = enabled
+                                AutoRunSwitch.setEnabled(extContext, enabled)
+                            },
+                            title = stringResource(R.string.autorun_label),
+                            summary = stringResource(R.string.autorun_summary),
+                        )
+                        var permMonOn by remember { mutableStateOf(PermMonSwitch.isEnabled(extContext)) }
+                        SwitchPreference(
+                            checked = permMonOn,
+                            onCheckedChange = { enabled ->
+                                permMonOn = enabled
+                                PermMonSwitch.setEnabled(extContext, enabled)
+                            },
+                            title = stringResource(R.string.permmon_label),
+                            summary = stringResource(R.string.permmon_summary),
+                        )
+                    }
+                },
             )
         }
     }

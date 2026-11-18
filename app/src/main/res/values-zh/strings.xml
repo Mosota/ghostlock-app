@@ -267,4 +267,6 @@
     <string name="autorun_summary">开机后自动运行 exploit；关闭后只在应用内手动运行。</string>
     <string name="permmon_label">重启后禁用权限监控</string>
     <string name="permmon_summary">开机提权成功后自动关闭 ColorOS 的 ADB 权限监控，保持完整 ADB，且不影响界面。</string>
+    <string name="extensions_label">扩展</string>
+    <string name="extensions_summary">开机自动执行、权限监控等增强选项</string>
 </resources>

@@ -865,6 +865,14 @@ class GhostlockViewModel(
         mutableState.update { it.copy(selectedManagerPackage = pkg, managerPickerVisible = false) }
     }
 
+    fun onOpenExtension() {
+        mutableState.update { it.copy(extensionScreenVisible = true) }
+    }
+
+    fun onCloseExtension() {
+        mutableState.update { it.copy(extensionScreenVisible = false) }
+    }
+
     fun onRun() = runExploit()
 
     /** Explains why the run button is greyed out. */

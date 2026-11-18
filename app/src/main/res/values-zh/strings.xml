@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">GhostLock 扩展</string>
+    <string name="app_name">GhostLock</string>
     <string name="action_run">执行</string>
     <string name="action_running">执行中…</string>
     <string name="advanced_settings">高级选项</string>
@@ -269,4 +269,6 @@
     <string name="permmon_summary">开机提权成功后自动关闭 ColorOS 的 ADB 权限监控，保持完整 ADB，且不影响界面。</string>
     <string name="extensions_label">扩展</string>
     <string name="extensions_summary">开机自动执行、权限监控等增强选项</string>
+    <string name="prepare_root_label">一键准备 root 环境</string>
+    <string name="prepare_root_summary">运行 exploit 后把 su 暴露给所有应用，让 Shevery 能以 root 身份启动。</string>
 </resources>

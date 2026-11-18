@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">GhostLock Ext</string>
+    <string name="app_name">GhostLock</string>
     <string name="action_run">Run</string>
     <string name="action_running">Running…</string>
     <string name="advanced_settings">Advanced options</string>
@@ -269,4 +269,6 @@
     <string name="permmon_summary">After boot-time root, turn off ColorOS ADB permission monitoring. Keeps full ADB without regressing the UI.</string>
     <string name="extensions_label">Extensions</string>
     <string name="extensions_summary">Boot autorun, permission monitor and other enhancements</string>
+    <string name="prepare_root_label">Prepare root environment</string>
+    <string name="prepare_root_summary">Run the exploit, then expose su to all apps so Shevery can start as root.</string>
 </resources>

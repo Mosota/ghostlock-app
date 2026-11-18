@@ -142,6 +142,7 @@ data class GhostlockUiState(
     val executionFields: List<ExecutionFieldValue> = emptyList(),
     val executionEditing: Map<String, String> = emptyMap(),
     val advancedScreenVisible: Boolean = false,
+    val extensionScreenVisible: Boolean = false,
     val debugExportEnabled: Boolean = true,
     val debugExportLocation: String = "",
     val debugKernelLogEnabled: Boolean = true,
@@ -220,6 +221,9 @@ interface GhostlockActions {
     fun onRevertProfileEdits()
     fun onOpenAdvanced()
     fun onCloseAdvanced()
+    fun onOpenExtension()
+    fun onCloseExtension()
+    fun onPrepareRoot()
     fun onShowAbout()
     fun onCloseAbout()
     fun onDebugExportChanged(enabled: Boolean)
@@ -253,6 +257,7 @@ interface GhostlockActions {
 internal sealed interface GhostlockScreen : NavKey {
     data object Main : GhostlockScreen
     data object Advanced : GhostlockScreen
+    data object Extension : GhostlockScreen
     data object About : GhostlockScreen
     data object Parameters : GhostlockScreen
     data object LoadConfig : GhostlockScreen
@@ -264,6 +269,10 @@ internal sealed interface GhostlockScreen : NavKey {
 
 internal fun navigationPath(state: GhostlockUiState): List<GhostlockScreen> {
     val path = mutableListOf<GhostlockScreen>(GhostlockScreen.Main)
+    if (state.extensionScreenVisible) {
+        path += GhostlockScreen.Extension
+        return path
+    }
     if (!state.advancedScreenVisible) return path
     path += GhostlockScreen.Advanced
     if (state.aboutVisible) {
@@ -302,6 +311,7 @@ private fun closeScreen(screen: GhostlockScreen, actions: GhostlockActions) {
     when (screen) {
         GhostlockScreen.Main -> Unit
         GhostlockScreen.Advanced -> actions.onCloseAdvanced()
+        GhostlockScreen.Extension -> actions.onCloseExtension()
         GhostlockScreen.About -> actions.onCloseAbout()
         GhostlockScreen.Parameters -> actions.onCloseParameters()
         GhostlockScreen.LoadConfig -> actions.onCloseLoadConfig()
@@ -357,6 +367,9 @@ internal fun GhostlockApp(
                 ) {
                     entry<GhostlockScreen.Main>(swipeDismiss = NavSwipeDirection.None) {
                         MainScreen(state = state, actions = actions)
+                    }
+                    entry<GhostlockScreen.Extension>(swipeDismiss = swipeBack) {
+                        ExtensionScreen(actions = actions)
                     }
                     entry<GhostlockScreen.Advanced>(swipeDismiss = swipeBack) {
                         AdvancedScreen(state = state, actions = actions)
@@ -830,7 +843,6 @@ private fun ControlPanel(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        var extensionVisible by remember { mutableStateOf(false) }
         ActivationStatusCard(
             supported = state.kernelSupported,
             profileAvailable = state.executionHasProfile,
@@ -885,7 +897,7 @@ private fun ControlPanel(
             ArrowPreference(
                 title = stringResource(R.string.extensions_label),
                 summary = stringResource(R.string.extensions_summary),
-                onClick = { extensionVisible = true },
+                onClick = actions::onOpenExtension,
             )
             /* PROFILE-SUGGEST-01: the profile suggestion seeds the toggle but no
              * longer hides it; an explicit user choice overrides either way. */
@@ -913,38 +925,6 @@ private fun ControlPanel(
                 title = stringResource(R.string.advanced_settings),
                 summary = stringResource(R.string.advanced_settings_summary),
                 onClick = actions::onOpenAdvanced,
-            )
-        }
-        if (extensionVisible) {
-            OverlayDialog(
-                show = true,
-                title = stringResource(R.string.extensions_label),
-                onDismissRequest = { extensionVisible = false },
-                content = {
-                    Column {
-                        val extContext = LocalContext.current
-                        var autoRunOn by remember { mutableStateOf(AutoRunSwitch.isEnabled(extContext)) }
-                        SwitchPreference(
-                            checked = autoRunOn,
-                            onCheckedChange = { enabled ->
-                                autoRunOn = enabled
-                                AutoRunSwitch.setEnabled(extContext, enabled)
-                            },
-                            title = stringResource(R.string.autorun_label),
-                            summary = stringResource(R.string.autorun_summary),
-                        )
-                        var permMonOn by remember { mutableStateOf(PermMonSwitch.isEnabled(extContext)) }
-                        SwitchPreference(
-                            checked = permMonOn,
-                            onCheckedChange = { enabled ->
-                                permMonOn = enabled
-                                PermMonSwitch.setEnabled(extContext, enabled)
-                            },
-                            title = stringResource(R.string.permmon_label),
-                            summary = stringResource(R.string.permmon_summary),
-                        )
-                    }
-                },
             )
         }
     }

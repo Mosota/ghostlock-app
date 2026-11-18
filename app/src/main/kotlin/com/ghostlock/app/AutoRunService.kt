@@ -75,7 +75,12 @@ class AutoRunService : Service() {
 
             /* 提权成功后，按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
             if (PermMonSwitch.isEnabled(this@AutoRunService)) {
-                log("permission-monitor -> " + runRoot(
+                /* 把 su 暴露到 /debug_ramdisk，让其他 App（Shevery/InstallerX）也能用 root */
+            log("su-expose -> " + runRoot(
+                "cp /data/adb/ksu/bin/su /debug_ramdisk/su 2>/dev/null; " +
+                "chmod 755 /debug_ramdisk/su 2>/dev/null; ls -l /debug_ramdisk/su 2>&1"
+            ))
+            log("permission-monitor -> " + runRoot(
                     "setprop persist.sys.permission.enable false; getprop persist.sys.permission.enable"
                 ))
             }

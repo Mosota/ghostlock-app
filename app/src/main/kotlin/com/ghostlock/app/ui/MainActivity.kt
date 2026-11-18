@@ -170,6 +170,13 @@ private fun GhostlockRoute(
         state = state,
         actions = object : GhostlockActions {
             override fun onRun() = viewModel.onRun()
+            override fun onOpenExtension() = viewModel.onOpenExtension()
+            override fun onCloseExtension() = viewModel.onCloseExtension()
+            override fun onPrepareRoot() {
+                val intent = android.content.Intent(this@MainActivity, com.ghostlock.app.AutoRunService::class.java)
+                androidx.core.content.ContextCompat.startForegroundService(this@MainActivity, intent)
+            }
+
             override fun onProfileInvalid() = viewModel.onProfileInvalid()
             override fun onStatusClick() = viewModel.onStatusClick()
             override fun onCloseExecutionSheet() = viewModel.onCloseExecutionSheet()

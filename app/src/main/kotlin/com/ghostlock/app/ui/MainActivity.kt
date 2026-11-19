@@ -176,9 +176,8 @@ private fun GhostlockRoute(
             override fun onOpenLogs() = viewModel.onOpenLogs()
             override fun onCloseLogs() = viewModel.onCloseLogs()
             override fun onPrepareRoot() {
-                val intent = android.content.Intent(appContext, com.ghostlock.app.AutoRunService::class.java)
-                appContext.startForegroundService(intent)
                 android.widget.Toast.makeText(appContext, R.string.prepare_root_started, android.widget.Toast.LENGTH_SHORT).show()
+                viewModel.onRun()
             }
 
             override fun onProfileInvalid() = viewModel.onProfileInvalid()

@@ -910,6 +910,26 @@ class GhostlockViewModel(
         }
     }
 
+    /** 尝试把 KernelSU 的 su 暴露到 /debug_ramdisk，供其他 App 使用。 */
+    private fun runSuExpose(): String {
+        val cmd = "cp /data/adb/ksu/bin/su /debug_ramdisk/su 2>/dev/null; chmod 755 /debug_ramdisk/su 2>/dev/null; ls -l /debug_ramdisk/su 2>&1"
+        if (android.os.Process.myUid() == 0) {
+            return runCatching {
+                val p = ProcessBuilder("sh", "-c", cmd).redirectErrorStream(true).start()
+                val out = p.inputStream.bufferedReader().readText().trim(); p.waitFor(); out
+            }.getOrElse { "error: ${it.message}" }
+        }
+        val candidates = listOf("su", "/data/adb/ksu/bin/su", "/debug_ramdisk/su", "/system/bin/su")
+        for (bin in candidates) {
+            val r = runCatching {
+                val p = ProcessBuilder(bin, "-c", cmd).redirectErrorStream(true).start()
+                val out = p.inputStream.bufferedReader().readText().trim(); p.waitFor(); out
+            }.getOrElse { "" }
+            if (r.isNotEmpty()) return "[$bin] $r"
+        }
+        return "no su usable (tried ${candidates.joinToString()})"
+    }
+
     private fun runExploit() {
         val snapshot = kernelSnapshot ?: return
         if (!snapshot.kernelSupported) {
@@ -934,6 +954,8 @@ class GhostlockViewModel(
                 val code = runExploitUseCase(pair, useShizuku, ::appendLog)
                 appendLog(if (code == 0) "result: exploit completed" else "result: exploit failed (exit code=$code)")
                 appendLog("exit code=$code")
+                appendLog("self uid after exploit = ${android.os.Process.myUid()}")
+                appendLog("su-expose -> " + runSuExpose())
             } finally {
                 endOperation()
                 send(GhostlockEffect.KeepScreenAwake(false))

@@ -265,8 +265,8 @@
     <string name="field_fallback_to">fallback_to</string>
     <string name="autorun_label">Run on boot</string>
     <string name="autorun_summary">Run the exploit automatically after boot. Off: only the Run button starts it.</string>
-    <string name="permmon_label">Disable system optimization</string>
-    <string name="permmon_summary">ColorOS only. Sets persist.sys.permission.enable=false after root: disables permission monitoring and unlocks full ADB without UI regression.</string>
+    <string name="permmon_label">Disable permission monitoring (ColorOS)</string>
+    <string name="permmon_summary">Writes persist.sys.permission.enable=false after root for full ADB without UI regression; restores it on shutdown so the next boot is clean. Fails if the device is force-killed.</string>
     <string name="extensions_label">Extensions</string>
     <string name="extensions_summary">Boot autorun, permission monitor and other enhancements</string>
     <string name="prepare_root_label">Prepare root environment</string>

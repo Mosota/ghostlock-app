@@ -265,8 +265,8 @@
     <string name="field_fallback_to">回退目标</string>
     <string name="autorun_label">开机自动执行</string>
     <string name="autorun_summary">开机后自动运行 exploit；关闭后只在应用内手动运行。</string>
-    <string name="permmon_label">停用系统优化</string>
-    <string name="permmon_summary">仅 ColorOS 适用。提权后执行 setprop persist.sys.permission.enable false：关闭权限监控、获得完整 ADB，界面不会回退。</string>
+    <string name="permmon_label">关闭权限监控（ColorOS）</string>
+    <string name="permmon_summary">提权后写入 persist.sys.permission.enable=false，获得完整 ADB 且界面不回退；关机时自动写回 true，避免下次开机被当成「停用系统优化」。强杀或断电当次失效。</string>
     <string name="extensions_label">扩展</string>
     <string name="extensions_summary">开机自动执行、权限监控等增强选项</string>
     <string name="prepare_root_label">一键准备 root 环境</string>

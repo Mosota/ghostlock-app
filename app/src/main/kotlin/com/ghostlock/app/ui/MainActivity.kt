@@ -177,7 +177,7 @@ private fun GhostlockRoute(
             override fun onCloseLogs() = viewModel.onCloseLogs()
             override fun onPrepareRoot() {
                 android.widget.Toast.makeText(appContext, R.string.prepare_root_started, android.widget.Toast.LENGTH_SHORT).show()
-                viewModel.onRun()
+                viewModel.prepareRoot()
             }
 
             override fun onProfileInvalid() = viewModel.onProfileInvalid()

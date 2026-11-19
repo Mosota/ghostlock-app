@@ -930,6 +930,35 @@ class GhostlockViewModel(
         return "no su usable (tried ${candidates.joinToString()})"
     }
 
+    /** 一键准备 root 环境：已有 root 就只做 su 暴露，没有才跑 exploit。 */
+    fun prepareRoot() {
+        appendLog("==== prepare root ====")
+        viewModelScope.launch(Dispatchers.IO) {
+            val probe = probeRoot()
+            if (probe != null) {
+                appendLog("root already available: $probe")
+                appendLog("su-expose -> " + runSuExpose())
+                return@launch
+            }
+            appendLog("no root yet, running exploit")
+            runExploit()
+        }
+    }
+
+    /** 探测现有 root：返回可用的 su 路径与 uid，探测不到返回 null。 */
+    private fun probeRoot(): String? {
+        if (android.os.Process.myUid() == 0) return "self uid=0"
+        val candidates = listOf("su", "/data/adb/ksu/bin/su", "/debug_ramdisk/su", "/system/bin/su")
+        for (bin in candidates) {
+            val r = runCatching {
+                val p = ProcessBuilder(bin, "-c", "id -u").redirectErrorStream(true).start()
+                val out = p.inputStream.bufferedReader().readText().trim(); p.waitFor(); out
+            }.getOrElse { "" }
+            if (r.trim() == "0") return "$bin -> uid=0"
+        }
+        return null
+    }
+
     private fun runExploit() {
         val snapshot = kernelSnapshot ?: return
         if (!snapshot.kernelSupported) {

@@ -80,11 +80,6 @@ internal fun ExtensionScreen(actions: GhostlockActions) {
             item {
                 Card(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     ArrowPreference(
-                        title = stringResource(R.string.prepare_root_label),
-                        summary = stringResource(R.string.prepare_root_summary),
-                        onClick = actions::onPrepareRoot,
-                    )
-                    ArrowPreference(
                         title = stringResource(R.string.logs_label),
                         summary = stringResource(R.string.logs_summary),
                         onClick = actions::onOpenLogs,

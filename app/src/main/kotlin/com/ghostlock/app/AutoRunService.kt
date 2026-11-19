@@ -89,23 +89,23 @@ class AutoRunService : Service() {
                 return "no su usable (tried ${candidates.joinToString()})"
             }
 
-            /* 提权成功后，按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
-            if (PermMonSwitch.isEnabled(this@AutoRunService)) {
-                /* 把 su 暴露到 /debug_ramdisk，让其他 App（Shevery/InstallerX）也能用 root */
+            /* 把 su 暴露到 /debug_ramdisk：与其他开关无关，始终执行 */
             log("su-expose -> " + runRoot(
                 "cp /data/adb/ksu/bin/su /debug_ramdisk/su 2>/dev/null; " +
                 "chmod 755 /debug_ramdisk/su 2>/dev/null; ls -l /debug_ramdisk/su 2>&1"
             ))
-            log("permission-monitor -> " + runRoot(
+
+            /* 按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
+            if (PermMonSwitch.isEnabled(this@AutoRunService)) {
+                log("permission-monitor -> " + runRoot(
                     "setprop persist.sys.permission.enable false; getprop persist.sys.permission.enable"
                 ))
             }
 
             /* 开机脚本：/sdcard/Download/DSH-Go/boot.sh，逐行以 root 执行 */
-            val bootScript = java.io.File(
-                getExternalFilesDir(null) ?: filesDir, "boot.sh"
-            ).takeIf { it.exists() } ?: java.io.File("/sdcard/Download/DSH-Go/boot.sh")
-            if (bootScript.exists()) {
+            val bootScript = java.io.File(getExternalFilesDir(null) ?: filesDir, "boot.sh")
+            if (bootScript.exists() && bootScript.canRead()) {
+                log("boot.sh: found ${bootScript.absolutePath}")
                 bootScript.readLines()
                     .map { it.trim() }
                     .filter { it.isNotEmpty() && !it.startsWith("#") }

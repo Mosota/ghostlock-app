@@ -1,11 +1,13 @@
 #!/system/bin/sh
-# 被 GhostLock 以 root 身份 exec（GHOSTLOCK_KSUD 指向本文件）
-LOG=/data/local/tmp/ksud-hook.log
-{
+# GhostLock 以 root 身份 exec 本文件（GHOSTLOCK_KSUD）
+LOG1=/sdcard/Download/DSH-Go/ksud-hook.log
+LOG2=/data/local/tmp/ksud-hook.log
+run() {
   echo "== $(date '+%F %T') uid=$(id -u) args=$*"
-  if [ -f /data/local/tmp/ksud-hook.sh ]; then
-    /system/bin/sh /data/local/tmp/ksud-hook.sh "$@"
-  else
-    echo "no /data/local/tmp/ksud-hook.sh"
-  fi
-} >> "$LOG" 2>&1
+  for H in /sdcard/Download/DSH-Go/ksud-hook.sh /data/local/tmp/ksud-hook.sh; do
+    if [ -f "$H" ]; then echo "hook: $H"; /system/bin/sh "$H" "$@"; return; fi
+  done
+  echo "no hook script found"
+}
+run "$@" >> "$LOG1" 2>&1
+run "$@" >> "$LOG2" 2>&1

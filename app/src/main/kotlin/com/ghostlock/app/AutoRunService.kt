@@ -30,6 +30,11 @@ class AutoRunService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!RUNNING.compareAndSet(false, true)) {
+            /* 已经在跑：重复点击直接忽略，避免并发跑多份 exploit */
+            stopSelf()
+            return START_NOT_STICKY
+        }
         startForeground(1, notification("准备中"))
         scope.launch { runOnce() }
         return START_NOT_STICKY
@@ -99,6 +104,7 @@ class AutoRunService : Service() {
         } catch (t: Throwable) {
             log("error: ${t::class.java.simpleName}: ${t.message}")
         } finally {
+            RUNNING.set(false)
             stopSelf()
         }
     }
@@ -120,5 +126,6 @@ class AutoRunService : Service() {
     private companion object {
         const val TAG = "GhostLockAuto"
         const val CHANNEL = "autorun"
+        val RUNNING = java.util.concurrent.atomic.AtomicBoolean(false)
     }
 }

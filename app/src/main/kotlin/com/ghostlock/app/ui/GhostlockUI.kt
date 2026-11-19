@@ -143,6 +143,7 @@ data class GhostlockUiState(
     val executionEditing: Map<String, String> = emptyMap(),
     val advancedScreenVisible: Boolean = false,
     val extensionScreenVisible: Boolean = false,
+    val logsScreenVisible: Boolean = false,
     val debugExportEnabled: Boolean = true,
     val debugExportLocation: String = "",
     val debugKernelLogEnabled: Boolean = true,
@@ -224,6 +225,8 @@ interface GhostlockActions {
     fun onOpenExtension()
     fun onCloseExtension()
     fun onPrepareRoot()
+    fun onOpenLogs()
+    fun onCloseLogs()
     fun onShowAbout()
     fun onCloseAbout()
     fun onDebugExportChanged(enabled: Boolean)
@@ -258,6 +261,7 @@ internal sealed interface GhostlockScreen : NavKey {
     data object Main : GhostlockScreen
     data object Advanced : GhostlockScreen
     data object Extension : GhostlockScreen
+    data object Logs : GhostlockScreen
     data object About : GhostlockScreen
     data object Parameters : GhostlockScreen
     data object LoadConfig : GhostlockScreen
@@ -271,6 +275,7 @@ internal fun navigationPath(state: GhostlockUiState): List<GhostlockScreen> {
     val path = mutableListOf<GhostlockScreen>(GhostlockScreen.Main)
     if (state.extensionScreenVisible) {
         path += GhostlockScreen.Extension
+        if (state.logsScreenVisible) path += GhostlockScreen.Logs
         return path
     }
     if (!state.advancedScreenVisible) return path
@@ -312,6 +317,7 @@ private fun closeScreen(screen: GhostlockScreen, actions: GhostlockActions) {
         GhostlockScreen.Main -> Unit
         GhostlockScreen.Advanced -> actions.onCloseAdvanced()
         GhostlockScreen.Extension -> actions.onCloseExtension()
+        GhostlockScreen.Logs -> actions.onCloseLogs()
         GhostlockScreen.About -> actions.onCloseAbout()
         GhostlockScreen.Parameters -> actions.onCloseParameters()
         GhostlockScreen.LoadConfig -> actions.onCloseLoadConfig()
@@ -370,6 +376,9 @@ internal fun GhostlockApp(
                     }
                     entry<GhostlockScreen.Extension>(swipeDismiss = swipeBack) {
                         ExtensionScreen(actions = actions)
+                    }
+                    entry<GhostlockScreen.Logs>(swipeDismiss = swipeBack) {
+                        LogScreen(actions = actions)
                     }
                     entry<GhostlockScreen.Advanced>(swipeDismiss = swipeBack) {
                         AdvancedScreen(state = state, actions = actions)

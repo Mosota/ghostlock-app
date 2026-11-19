@@ -271,4 +271,9 @@
     <string name="extensions_summary">Boot autorun, permission monitor and other enhancements</string>
     <string name="prepare_root_label">Prepare root environment</string>
     <string name="prepare_root_summary">Run the exploit, then expose su to all apps so Shevery can start as root.</string>
+    <string name="logs_label">Run log</string>
+    <string name="logs_summary">View the latest autorun.log</string>
+    <string name="logs_refresh">Refresh</string>
+    <string name="logs_path">autorun.log in app external files</string>
+    <string name="prepare_root_started">Started — check the log in a few seconds</string>
 </resources>

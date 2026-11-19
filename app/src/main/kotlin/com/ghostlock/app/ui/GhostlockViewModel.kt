@@ -870,7 +870,15 @@ class GhostlockViewModel(
     }
 
     fun onCloseExtension() {
-        mutableState.update { it.copy(extensionScreenVisible = false) }
+        mutableState.update { it.copy(extensionScreenVisible = false, logsScreenVisible = false) }
+    }
+
+    fun onOpenLogs() {
+        mutableState.update { it.copy(logsScreenVisible = true) }
+    }
+
+    fun onCloseLogs() {
+        mutableState.update { it.copy(logsScreenVisible = false) }
     }
 
     fun onRun() = runExploit()

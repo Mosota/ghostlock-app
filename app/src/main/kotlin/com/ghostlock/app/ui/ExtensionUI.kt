@@ -84,6 +84,11 @@ internal fun ExtensionScreen(actions: GhostlockActions) {
                         summary = stringResource(R.string.prepare_root_summary),
                         onClick = actions::onPrepareRoot,
                     )
+                    ArrowPreference(
+                        title = stringResource(R.string.logs_label),
+                        summary = stringResource(R.string.logs_summary),
+                        onClick = actions::onOpenLogs,
+                    )
                 }
             }
         }

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ghostlock.app.R
 import java.io.File
 import top.yukonga.miuix.kmp.basic.Card
@@ -28,7 +27,6 @@ import top.yukonga.miuix.kmp.basic.rememberTopAppBarState
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.preference.ArrowPreference
-import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 private fun readLog(context: android.content.Context, maxLines: Int = 400): List<String> {
     val f = File(context.getExternalFilesDir(null), "autorun.log")
@@ -74,8 +72,6 @@ internal fun LogScreen(actions: GhostlockActions) {
                 Text(
                     text = line,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 1.dp),
-                    color = MiuixTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 11.sp,
                 )
             }
         }

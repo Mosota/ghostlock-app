@@ -39,7 +39,7 @@ private fun readLog(context: android.content.Context, maxLines: Int = 400): List
 @Composable
 internal fun LogScreen(actions: GhostlockActions) {
     val context = LocalContext.current
-    var lines by remember { mutableStateOf(readLog(context)) }
+    var lines by remember { mutableStateOf(readLog(context).asReversed()) }
     val scrollBehavior = MiuixScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -64,7 +64,7 @@ internal fun LogScreen(actions: GhostlockActions) {
                     ArrowPreference(
                         title = stringResource(R.string.logs_refresh),
                         summary = stringResource(R.string.logs_path),
-                        onClick = { lines = readLog(context) },
+                        onClick = { lines = readLog(context).asReversed() },
                     )
                 }
             }

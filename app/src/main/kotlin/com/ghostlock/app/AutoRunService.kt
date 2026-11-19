@@ -69,14 +69,25 @@ class AutoRunService : Service() {
             val selfUid = android.os.Process.myUid()
             log("self uid after exploit = $selfUid")
 
-            fun runRoot(cmd: String): String = runCatching {
-                val pb = if (selfUid == 0) ProcessBuilder("sh", "-c", cmd)
-                         else ProcessBuilder("su", "-c", cmd)
-                val proc = pb.redirectErrorStream(true).start()
-                val out = proc.inputStream.bufferedReader().readText().trim()
-                proc.waitFor()
-                out
-            }.getOrElse { "error: ${it.message}" }
+            fun runRoot(cmd: String): String {
+                if (selfUid == 0) {
+                    return runCatching {
+                        val proc = ProcessBuilder("sh", "-c", cmd).redirectErrorStream(true).start()
+                        val out = proc.inputStream.bufferedReader().readText().trim()
+                        proc.waitFor(); out
+                    }.getOrElse { "error: ${it.message}" }
+                }
+                val candidates = listOf("su", "/data/adb/ksu/bin/su", "/debug_ramdisk/su", "/system/bin/su")
+                for (bin in candidates) {
+                    val r = runCatching {
+                        val proc = ProcessBuilder(bin, "-c", cmd).redirectErrorStream(true).start()
+                        val out = proc.inputStream.bufferedReader().readText().trim()
+                        proc.waitFor(); out
+                    }.getOrElse { "" }
+                    if (r.isNotEmpty()) return "[$bin] $r"
+                }
+                return "no su usable (tried ${candidates.joinToString()})"
+            }
 
             /* 提权成功后，按独立开关关掉 ColorOS 的权限监控（不影响界面）。 */
             if (PermMonSwitch.isEnabled(this@AutoRunService)) {
@@ -91,7 +102,9 @@ class AutoRunService : Service() {
             }
 
             /* 开机脚本：/sdcard/Download/DSH-Go/boot.sh，逐行以 root 执行 */
-            val bootScript = java.io.File("/sdcard/Download/DSH-Go/boot.sh")
+            val bootScript = java.io.File(
+                getExternalFilesDir(null) ?: filesDir, "boot.sh"
+            ).takeIf { it.exists() } ?: java.io.File("/sdcard/Download/DSH-Go/boot.sh")
             if (bootScript.exists()) {
                 bootScript.readLines()
                     .map { it.trim() }

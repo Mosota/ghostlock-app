@@ -24,6 +24,8 @@ import com.ghostlock.app.GhostlockApplication
 import com.ghostlock.app.R
 
 class MainActivity : ComponentActivity() {
+    private val activityContext: android.content.Context get() = this
+
     private val viewModel by viewModels<GhostlockViewModel> {
         viewModelFactory {
             initializer { GhostlockViewModel((application as GhostlockApplication).createRepository()) }
@@ -173,8 +175,8 @@ private fun GhostlockRoute(
             override fun onOpenExtension() = viewModel.onOpenExtension()
             override fun onCloseExtension() = viewModel.onCloseExtension()
             override fun onPrepareRoot() {
-                val intent = android.content.Intent(this@MainActivity, com.ghostlock.app.AutoRunService::class.java)
-                this@MainActivity.startForegroundService(intent)
+                val intent = android.content.Intent(activityContext, com.ghostlock.app.AutoRunService::class.java)
+                activityContext.startForegroundService(intent)
             }
 
             override fun onProfileInvalid() = viewModel.onProfileInvalid()
